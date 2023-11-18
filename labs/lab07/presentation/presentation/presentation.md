@@ -2,12 +2,12 @@
 ## Front matter
 lang: ru-RU
 title: Лабораторная работа №7
-subtitle: Информационная безопасность
+subtitle: Компьютерный практикум по статистическому анализу данных
 author:
   - Николаев Д. И.
 institute:
   - Российский университет дружбы народов, Москва, Россия
-date: 13 октября 2023
+date: 14 сентября 2023
 
 ## i18n babel
 babel-lang: russian
@@ -27,147 +27,74 @@ header-includes:
  - '\makeatother'
 ---
 
+# Прагматика выполнения
+
+- Получение навыков работы в Jupyter Notebook;
+- Освоение особенностей языка Julia;
+- Применение полученных знаний на практике в дальнейшем.
+
 # Цели
 
-Освоить на практике применение режима однократного гаммирования.
+Основной целью работы является освоение специализированных пакетов Julia для обработки
+данных
 
 # Задачи
 
-1. Реализовать режим однократного гаммирования;
-2. Найти зашифрованный текст по известному исходному тексту и ключу;
-3. Найти ключ по известному зашифрованному и исходному тексту.
+1. Используя Jupyter Lab, повторите примеры из раздела 7.2.
+2. Выполните задания для самостоятельной работы (раздел 7.4).
 
 # Выполнение работы
 
-## Создание словаря
+## Новый пользователь
 
-```Julia
-const S = """абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПР
-СТУФХЦЧШЩЪЫЬЭЮЯ0123456789., !-"""
-const N = length(S)
+![Создание учётной записи](image/1.png){#fig:001 width=70%}
 
-Dictionary = Dict(zip(S, 1:length(S)))
-# Сделаем словарь с ключом и значением наоборот
-Dictionary2 = Dict(zip(values(Dictionary), keys(Dictionary)))
-```
+![Задание пароля новой учетной записи guest](image/2.png){#fig:002 width=70%}
 
-## Получение шифротекста по известному исходному тексту и ключу 1
+## Выбор пользователя
 
-```Julia
-function Gamma_Find_Encrypted_Text(Source_Message::String, Key::String)::String
-    n = length(Source_Message)  # Длина исходного сообщения
-    println("Исходное сообщение - ", Source_Message)
-    println("Ключ - ", Key)
-    n != length(Key) ? println("Размерности ключа и сообщения не равны") : skip
-    Source_Code = []
-    Key_Code = []
-    for i in Source_Message
-        push!(Source_Code, Dictionary[i])
-    end
-    for i in Key
-        push!(Key_Code, Dictionary[i])
-    end
-    println("Код исходного сообщения - ", Source_Code)
-```
+![Выбор пользователя](image/3.png){#fig:003 width=70%}
 
-## Получение шифротекста по известному исходному тексту и ключу 2
+## Уточнение пользователя 1
 
-```Julia
-    println("Код ключа - ", Key_Code)
-    Encrypted_Code = []   # Код зашифрованного сообщения
-    for i in range(1, n)
-        a = Source_Code[i] + Key_Code[i]
-        a > N ? a %= N : skip
-        push!(Encrypted_Code, a)
-    end
-    println("Код зашифрованного сообщения - ", Encrypted_Code)
-    Encrypted_Message = ""
-    for i in Encrypted_Code
-        Encrypted_Message *= Dictionary2[i]
-    end
-    println("Зашифрованное сообщение - ", Encrypted_Message)
-```
+![Домашняя директория пользователя guest](image/4.png){#fig:004 width=70%}
 
-## Получение шифротекста по известному исходному тексту и ключу 3
+![Имя текущего пользователя](image/5.png){#fig:005 width=70%}
 
-```Julia
-    Decrypted_Code = []   # Код зашифрованного сообщения
-    for i in range(1, n)
-        a = Encrypted_Code[i] - Key_Code[i]
-        a <= 0 ? a += N : skip
-        push!(Decrypted_Code, a)
-    end
-    println("Код дешифрованного сообщения - ", Decrypted_Code)
-    Decrypted_Message = ""
-    for i in Decrypted_Code
-        Decrypted_Message *= Dictionary2[i]
-    end
-    println("Дешифрованное сообщение - ", Decrypted_Message)
-    return Encrypted_Message
-```
+## ID пользователя
 
-## Получение ключа по известному исходному тексту и шифротексту 1
+![Имя пользователя и его группа](image/6.png){#fig:006 width=70%}
 
-```Julia
-function Gamma_Find_Key_Text(Source_Message::String, Encrypted_Message::String)::String
-    n = length(Source_Message)  # Длина исходного сообщения
-    println("Исходное сообщение - ", Source_Message)
-    println("Зашифрованное сообщение - ", Encrypted_Message)
-    n != length(Encrypted_Message) ? println("Несоответсвие размерности исходного и зашифрованного сообщений") : skip
-    Source_Code = []
-    Encrypted_Code = []
-    for i in Source_Message
-        push!(Source_Code, Dictionary[i])
-    end
-    for i in Encrypted_Message
-        push!(Encrypted_Code, Dictionary[i])
-    end
-    println("Код исходного сообщения - ", Source_Code)
-```
+![User id (uid) и group id (gid) пользователя guest](image/7.png){#fig:007 width=70%}
 
-## Получение ключа по известному исходному тексту и шифротексту 2
+## Права доступа к директориям в домашней
 
-```Julia
-    println("Код зашифрованного сообщения - ", Encrypted_Code)
-    Key_Code = []   # Код ключа
-    for i in range(1, n)
-        a = Encrypted_Code[i] - Source_Code[i]
-        a <= 0 ? a += N : skip
-        push!(Key_Code, a)
-    end
-    println("Код ключа - ", Key_Code)
-    Key = ""
-    for i in Key_Code
-        Key *= Dictionary2[i]
-    end
-    println("Ключ - ", Key)
-    return Key
-end
-```
+![Существующие в /home директории и права доступа к ним](image/8.png){#fig:008 width=70%}
 
-## Вызов функций
+![Проверка атрибутов поддиректорий](image/9.png){#fig:009 width=70%}
 
-```Julia
-Source_Text = "С Новым Годом, друзья!"
-Given_Key = "АБВГДЕжзийклмнопрстуфх"
+## Права доступа к созданной директории
 
-Result_Encrypted_Message = Gamma_Find_Encrypted_Text(Source_Text, Given_Key) 
-println("Зашифрованное сообщение, имея исходный текст и ключ - ", Result_Encrypted_Message)
+![Права доступа поддиректорий и созданной директории dir1](image/10.png){#fig:010 width=70%}
 
-Result_Key = Gamma_Find_Key_Text(Source_Text, Result_Encrypted_Message)
-println("Ключ, имея исходный текст и зашифрованное сообщение - ", Result_Key)
+## Снятие прав доступа
 
-if Given_Key == Result_Key
-    println("Однократное гаммирование работает - успех!")
-else
-    println("Неудача")
-end
-```
+![Снятие прав с директории dir1](image/11.png){#fig:011 width=70%}
 
-## Результат
+## Проверка отсутсвия прав
 
-![Реализация однократного гаммирования](image/1.png){#fig:001 width=70%}
+![Попытка создания файла в директории dir1](image/12.png){#fig:012 width=70%}
+
+![Проверка содержимого директории dir1](image/13.png){#fig:013 width=70%}
+
+## Таблица 1
+
+![Установленные права и разрешённые действия](image/14.png){#fig:014 width=120%}
+
+## Таблица 2
+
+![Минимально необходимые права для выполнения операций](image/15.png){#fig:015 width=70%}
 
 # Результаты
 
-По результатам работы, я освоил на практике применение режима однократного гаммирования.
+В ходе работы я освоил специализированные пакеты в Julia для обработки данных
